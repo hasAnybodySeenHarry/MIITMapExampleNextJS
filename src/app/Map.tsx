@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import maplibregl, { Map as MaplibreMap, Marker, NavigationControl } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css'; // import CSS here so no need to dynamically add
 
 export default function Map() {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -11,16 +13,16 @@ export default function Map() {
     const fallbackCoords = { lng: 13.388, lat: 52.517 };
 
     const initMap = (center: { lng: number; lat: number }) => {
-      const map = new (window as any).maplibregl.Map({
+      const map: MaplibreMap = new maplibregl.Map({
         container: mapRef.current!,
         style: 'https://tiles.openfreemap.org/styles/liberty',
         center: [center.lng, center.lat],
         zoom: 12,
       });
 
-      map.addControl(new (window as any).maplibregl.NavigationControl());
+      map.addControl(new NavigationControl());
 
-      new (window as any).maplibregl.Marker()
+      new Marker()
         .setLngLat([center.lng, center.lat])
         .addTo(map);
     };
@@ -46,17 +48,7 @@ export default function Map() {
       }
     };
 
-    // Here, we load MapLibre script dynamically #Yan
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/maplibre-gl/dist/maplibre-gl.js';
-    script.onload = loadMap;
-    document.head.appendChild(script);
-
-    // MapLibre CSS
-    const link = document.createElement('link');
-    link.href = 'https://unpkg.com/maplibre-gl/dist/maplibre-gl.css';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
+    loadMap();
   }, []);
 
   return (
